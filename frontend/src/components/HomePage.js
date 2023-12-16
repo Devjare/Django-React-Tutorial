@@ -25,13 +25,10 @@ export default function HomePage() {
         setRoomCode(data.code);
       })
   }, [])
-  // async function componentDidMount() {
-  //   fetch("/user-in-room")
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     setRoomCode(data.code)
-  //   });
-  // }
+
+  function clearRoomCode () { 
+    setRoomCode(null)
+  }
   
   // if there's an existing room code in the session, redirect to such room.
   return (
@@ -46,7 +43,7 @@ export default function HomePage() {
 						element={<CreateRoomPage />} />
 					<Route
 						path="/room/:roomCode"
-						element={<Room />} />
+						element={<Room leaveRoomCallback={clearRoomCode}/>} />
 				</Routes>
 			</Router>
 		);
