@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import { useState } from 'react';
+// useHistory is deprecated from react-router-dom v5
+// import { useHistory } from 'react-router-dom'; 
+// react-router-dom v6 uses useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import { Link } from "react-router-dom";
 
 import Button from "@mui/material/Button";
@@ -12,66 +17,45 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
 
-// TODO: Currently there's a problem with the line 65
-// on this.props.history. In newer version of react that usage
-// of props is deprecated, instead use hooks, particularly "useHistory"
-// seems to be the solution. However a FULL REFACTOR of the class component
-// to a function component is needed. Hooks are not available for class components.
-export default class CreateRoomPage extends Component {
-  defaultVotes = 2;
-  
-	constructor(props) {
-		super(props);
-    // On class components (React old way of creating components)
-    // states are handled in this object "state"
-    // function components use const values and setState function to handled
-    // states updates.
-    this.state = {
-      guestCanPause: true,
-      votesToSkip: this.defaultVotes
-    };
-  
-    // This is really weird way to access DOM Elements from the class?
-    this.handleRoomButtonPressed = this.handleRoomButtonPressed.bind(this);
-    this.handleVotesChange = this.handleVotesChange.bind(this);
-    this.handleGuestCanPauseChange = this.handleGuestCanPauseChange.bind(this);
-	}
+export default function CreateRoomPage() {
+  let navigate = useNavigate();
+  const defaultVotes = 2;
 
-  handleVotesChange(e) {
-    this.setState({
-      votesToSkip: e.target.value,
-    });
-  }
+  const [ guestCanPause, setGuestCanPause ] = useState(false);
+  const [ votesToSkip, setVotesToSkip ] = useState(0);
 
-  handleGuestCanPauseChange(e) {
-    this.setState({
-      guestCanPause: e.target.value === 'true' ? true : false,
-    });
+  function handleGuestCanPauseChange(e) {
+    setGuestCanPause(e.target.value == "true");
   }
   
-  handleRoomButtonPressed() {
+  function handleVotesChange(e) {
+    setVotesToSkip(e.target.value);
+  }
+
+  function handleRoomButtonPressed(e) {
+  // Update on database new values.
     // Send request to backend endpoint.
     const requestOptions = {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
-        votes_to_skip: this.state.votesToSkip,
-        guest_can_pause: this.state.guestCanPause
+        votes_to_skip: votesToSkip,
+        guest_can_pause: guestCanPause
       })
     };
-  
     // Common fetch request.
     fetch('/api/create-room', requestOptions)
       .then((response) => {
         return response.json()
       }).then((data) => {
-        console.log(this.props)
-        this.props.history.push("/room/" + data.code)
+        console.log(data)
+        // this.props.history.push()
+        navigate("/room/" + data.code);
+        
       })
   }
 
-	render() {
-    return (
+  return (
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
           <Typography component="h4" variant="h4">
@@ -87,7 +71,7 @@ export default class CreateRoomPage extends Component {
             </FormHelperText>
             <RadioGroup row 
               defaultValue="true" 
-              onChange={this.handleGuestCanPauseChange}>
+              onChange={handleGuestCanPauseChange}>
               <FormControlLabel 
                 value="true" 
                 control={<Radio color="primary" />}
@@ -106,8 +90,8 @@ export default class CreateRoomPage extends Component {
           <FormControl>
             <TextField required={true} 
             type="number" 
-            defaultValue={this.defaultVotes}
-            onChange={this.handleVotesChange}
+            defaultValue={defaultVotes}
+            onChange={handleVotesChange}
             inputProps={{
               min: 1,
               style: {
@@ -125,7 +109,7 @@ export default class CreateRoomPage extends Component {
           <Button 
             color="primary" 
             variant="contained" 
-            onClick={this.handleRoomButtonPressed}>
+            onClick={handleRoomButtonPressed}>
             Create a room</Button>
         </Grid>
         <Grid item xs={12} align="center">
@@ -133,5 +117,4 @@ export default class CreateRoomPage extends Component {
             component={Link}>Back</Button>
         </Grid>
       </Grid>);
-	}
 }
