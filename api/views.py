@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -109,3 +109,10 @@ class JoinRoom(APIView):
             {"Bad Request": "Invalid post data, did not find a code key."},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+class UserInRoom(APIView):
+    def get(self, request, format=None):
+        data = {"code": self.request.session.get("room_code")}
+
+        return JsonResponse(data, status=status.HTTP_200_OK)
