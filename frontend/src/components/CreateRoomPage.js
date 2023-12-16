@@ -12,6 +12,11 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
 
+// TODO: Currently there's a problem with the line 65
+// on this.props.history. In newer version of react that usage
+// of props is deprecated, instead use hooks, particularly "useHistory"
+// seems to be the solution. However a FULL REFACTOR of the class component
+// to a function component is needed. Hooks are not available for class components.
 export default class CreateRoomPage extends Component {
   defaultVotes = 2;
   
@@ -60,7 +65,8 @@ export default class CreateRoomPage extends Component {
       .then((response) => {
         return response.json()
       }).then((data) => {
-        console.log(data)
+        console.log(this.props)
+        this.props.history.push("/room/" + data.code)
       })
   }
 
