@@ -3,11 +3,14 @@ import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ButtonGroup, Button, Typography, Grid } from  "@mui/material";
 
+import CreateRoomPage from "./CreateRoomPage"
+
 export default function Room({leaveRoomCallback}) {
   let navigate = useNavigate();
   const [ votesToSkip, setVotesToSkip ] = useState(0);
   const [ guestCanPause, setGuestCanPause ] = useState(false);
   const [ isHost, setIsHost ] = useState(false);
+  const [ showSettings, setShowSettings ] = useState(false);
   
   const roomCode = useParams()["roomCode"]; 
   getRoomDetails()
@@ -44,37 +47,77 @@ export default function Room({leaveRoomCallback}) {
       })
   }
 
-  return (
-    <Grid container spacing={1}>
-      <Grid item xs={12} align="center">
-        <Typography variant="h4" component="h4">
-          Code: {roomCode}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Votes to skip: {votesToSkip}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Guest can pause: {guestCanPause.toString()}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Is host?: {isHost.toString()}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <ButtonGroup>
-          <Button variant="contained" color="secondary" onClick={leaveButtonPressed}>
-            Leave room
+  function updateShowSettings(value) {
+    setShowSettings(value)
+  }
+
+  function renderSettings() {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <CreateRoomPage udpate={true} votesToSkip={votesToSkip}
+            guestCanPause={guestCanPause} roomCode={roomCode} updateCallback={() => {}}
+          />
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button variant="contained" color="secondary" onClick={updateShowSettings(false)}>
+            Close
           </Button>
-        </ButtonGroup>
+        </Grid>
+        <Grid item xs={12} align="center">
+        </Grid>
       </Grid>
-    </Grid>
-  )
+    );
+  }
+  
+  // not using an arrow function makes to activate the onclick concstatly since it's a call and not a 
+  // piece of code. maybe if the function returned a reference to a function it would work.
+  function renderSettingsMethod() {
+    return (
+      <Grid item xs={12} align="center">
+        <Button variant="contained" color="primary" onClick={ () => updateShowSettings(true)}>
+          Settings
+        </Button>
+      </Grid>
+    );
+  }
+
+  if (showSettings) {
+    return renderSettings()
+  } else {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Typography variant="h4" component="h4">
+            Code: {roomCode}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Votes to skip: {votesToSkip}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Guest can pause: {guestCanPause.toString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Is host?: {isHost.toString()}
+          </Typography>
+        </Grid>
+        {isHost ? renderSettingsMethod() : null }
+        <Grid item xs={12} align="center">
+          <ButtonGroup>
+            <Button variant="contained" color="secondary" onClick={leaveButtonPressed}>
+              Leave room
+            </Button>
+          </ButtonGroup>
+        </Grid>
+      </Grid>
+    );
+  }
       
       
       
