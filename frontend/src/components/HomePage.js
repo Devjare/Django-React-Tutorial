@@ -13,13 +13,8 @@ import {
 	Redirect,
 } from "react-router-dom"
 
-export default class HomePage extends Component {
-	constructor(props) {
-		super(props);
-	}
-
-	render() {
-		return (
+export default function HomePage() {
+  return (
 			<Router>
 		 		<Routes>
 					<Route exact path="/" element={
@@ -37,5 +32,4 @@ export default class HomePage extends Component {
 				</Routes>
 			</Router>
 		);
-	}
 }
