@@ -9,10 +9,10 @@ export default function Room() {
   const [ isHost, setIsHost ] = useState(false);
   
   const roomCode = useParams()["roomCode"]; 
+  getRoomDetails()
 
   function getRoomDetails() {
-    url = `/api/get-room?code=${roomCode}`
-    fetch(url).then((response) => response.json())
+    fetch(`/api/get-room?code=${roomCode}`).then((response) => response.json())
     .then(data => {
         setVotesToSkip(data.votes_to_skip)
         setGuestCanPause(data.guest_can_pause)
