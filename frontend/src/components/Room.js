@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { useState } from 'react'
-import { useParams } from 'react-router-dom';
-
+import { useParams, Link } from 'react-router-dom';
+import { ButtonGroup, Button, Typography, Grid } from  "@mui/material";
 
 export default function Room() {
   const [ votesToSkip, setVotesToSkip ] = useState(0);
@@ -21,11 +21,37 @@ export default function Room() {
   }
 
   return (
-    <div>
-      <h3>Room code: {roomCode}</h3>
-      <p>Votes to skip: {votesToSkip}</p>
-      <p>Guest can pause: {guestCanPause.toString()}</p>
-      <p>Is host?: {isHost.toString()}</p>
-    </div>
+    <Grid container spacing={1}>
+      <Grid item xs={12} align="center">
+        <Typography variant="h4" component="h4">
+          Code: {roomCode}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} align="center">
+        <Typography variant="h6" component="h6">
+          Votes to skip: {votesToSkip}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} align="center">
+        <Typography variant="h6" component="h6">
+          Guest can pause: {guestCanPause.toString()}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} align="center">
+        <Typography variant="h6" component="h6">
+          Is host?: {isHost.toString()}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} align="center">
+        <ButtonGroup>
+          <Button variant="contained" color="secondary" to="/" component={Link}>
+            Leave room
+          </Button>
+        </ButtonGroup>
+      </Grid>
+    </Grid>
   )
+      
+      
+      
 }

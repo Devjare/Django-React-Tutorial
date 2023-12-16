@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import RoomJoinPage from "./RoomJoinPage";
 import CreateRoomPage from "./CreateRoomPage";
 import Room from "./Room";
@@ -11,27 +11,33 @@ import {
 	BrowserRouter as Router,
 	Route,
 	Routes,
-  Link
+  Link,
+  Navigate
 } from "react-router-dom"
 
 export default function HomePage() {
-  
   const [ roomCode, setRoomCode ] = useState(null);
   
-  async function componentDidMount() {
-    fetch("/user-in-room")
+  useEffect(() => {
+    fetch('/api/user-in-room')
     .then((response) => response.json())
     .then((data) => {
-      setRoomCode(data.code)
-    });
-  }
-
+        setRoomCode(data.code);
+      })
+  }, [])
+  // async function componentDidMount() {
+  //   fetch("/user-in-room")
+  //   .then((response) => response.json())
+  //   .then((data) => {
+  //     setRoomCode(data.code)
+  //   });
+  // }
+  
+  // if there's an existing room code in the session, redirect to such room.
   return (
 			<Router>
 		 		<Routes>
-          <Route exact path="/"  element={renderHomePage()} render={() => {
-            return roomCode == null ? (<Redirect to={`/room/${roomCode}`} />) : renderHomePage()
-          }} />
+          <Route exact path="/"  element={ roomCode ? ( <Navigate to={`/room/${roomCode}`} /> ) : renderHomePage()} />
 					<Route
 						path="/join"
 						element={<RoomJoinPage />} />
