@@ -29,12 +29,9 @@ export default function HomePage() {
   return (
 			<Router>
 		 		<Routes>
-          <Route exact 
-        path="/" 
-        element={renderHomePage} 
-        render={() => {
-          return roomCode ? (<Redirect to={`/room/${roomCode}`} />) : renderHomePage
-        }}/>
+          <Route exact path="/"  element={renderHomePage()} render={() => {
+            return roomCode == null ? (<Redirect to={`/room/${roomCode}`} />) : renderHomePage()
+          }} />
 					<Route
 						path="/join"
 						element={<RoomJoinPage />} />
