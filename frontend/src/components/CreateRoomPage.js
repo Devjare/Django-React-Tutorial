@@ -10,7 +10,8 @@ import { Button , Grid, Typography, TextField, FormHelperText, FormControl,
   Radio, RadioGroup, FormControlLabel } from "@mui/material"
 
 
-export default function CreateRoomPage() {
+export default function CreateRoomPage({ vtk, gcp, update=false, roomCode=null, updateCallback=() => {} }) {
+
   let navigate = useNavigate();
   const defaultVotes = 2;
 
