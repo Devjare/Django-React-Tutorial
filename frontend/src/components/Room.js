@@ -48,7 +48,8 @@ export default function Room({leaveRoomCallback}) {
   }
 
   function updateShowSettings(value) {
-    setShowSettings(value)
+    setShowSettings(value);
+    setIsHost(false);
   }
 
   function renderSettings() {
@@ -60,7 +61,7 @@ export default function Room({leaveRoomCallback}) {
           />
         </Grid>
         <Grid item xs={12} align="center">
-          <Button variant="contained" color="secondary" onClick={updateShowSettings(false)}>
+          <Button variant="contained" color="secondary" onClick={ () => updateShowSettings(false)}>
             Close
           </Button>
         </Grid>
