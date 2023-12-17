@@ -120,7 +120,7 @@ export default function CreateRoomPage({ vts, gcp, update=false, roomCode=null, 
         <Grid item xs={12} align="center">
           <Collapse in={errorMessage != "" || successMessage != ""}>
           { successMessage != "" ? (
-            <Alert 
+            <Alert
               severity="success" 
               onClose={() => {setSuccessMessage("")} }>
               successMessage
