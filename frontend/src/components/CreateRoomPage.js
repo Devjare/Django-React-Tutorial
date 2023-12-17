@@ -7,16 +7,18 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
 
 import { Button , Grid, Typography, TextField, FormHelperText, FormControl,
-  Radio, RadioGroup, FormControlLabel } from "@mui/material"
+  Radio, RadioGroup, FormControlLabel, Alert } from "@mui/material"
 
+import { Collapse } from "@mui/material"
 
-export default function CreateRoomPage({ vtk, gcp, update=false, roomCode=null, updateCallback=() => {} }) {
+export default function CreateRoomPage({ vts, gcp, update=false, roomCode=null, updateCallback=() => {} }) {
 
   let navigate = useNavigate();
-  const defaultVotes = 2;
 
-  const [ guestCanPause, setGuestCanPause ] = useState(false);
-  const [ votesToSkip, setVotesToSkip ] = useState(0);
+  const [ votesToSkip, setVotesToSkip ] = useState(vts);
+  const [ guestCanPause, setGuestCanPause ] = useState(gcp);
+  const [ successMessage, setSuccessMessage ] = useState("");
+  const [ errorMessage, setErrorMessage ] = useState("");
 
   function handleGuestCanPauseChange(e) {
     setGuestCanPause(e.target.value == "true");
@@ -25,7 +27,36 @@ export default function CreateRoomPage({ vtk, gcp, update=false, roomCode=null, 
   function handleVotesChange(e) {
     setVotesToSkip(e.target.value);
   }
+  
+  function handleUpdateButtonPressed() {
+    const requestOptions = {
+      method: "PATCH",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        votes_to_skip: votesToSkip,
+        guest_can_pause: guestCanPause,
+        code: roomCode
+      })
+    };
+    // Common fetch request.
+    fetch('/api/update-room', requestOptions)
+      .then((response) => {
+        console.log("Response: ")
+        console.log(response)
+        if (response.ok) {
+          setSuccessMessage("Room updated successfully!")
+        } else {
+          setErrorMessage("Room failed to update.")
+        }
+      })
+      .finally(() => {
+        // after the fetch is settled, call update callback
+        updateCallback()
+      })
 
+  }
+    
+  
   function handleRoomButtonPressed(e) {
   // Update on database new values.
     // Send request to backend endpoint.
@@ -48,12 +79,63 @@ export default function CreateRoomPage({ vtk, gcp, update=false, roomCode=null, 
         
       })
   }
+ 
+  function renderUpdateButtons() { 
+    return (
+      <Grid container>
+        <Grid item xs={12} align="center">
+          <Button 
+            color="primary" 
+            variant="contained" 
+            onClick={handleUpdateButtonPressed}>
+            Update
+          </Button>
+        </Grid>
+      </Grid>
+    )
+  }
 
+  function renderCreateButtons() {
+    return (
+      <Grid container>
+        <Grid item xs={12} align="center">
+          <Button 
+            color="primary" 
+            variant="contained" 
+            onClick={handleRoomButtonPressed}>
+            Create a room
+          </Button>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button color="secondary" variant="contained" to="/"
+            component={Link}>Back</Button>
+        </Grid>
+      </Grid>
+    )
+  }
+
+  const title = update ? "Update room" : "Create a room"
   return (
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
+          <Collapse in={errorMessage != "" || successMessage != ""}>
+          { successMessage != "" ? (
+            <Alert 
+              severity="success" 
+              onClose={() => {setSuccessMessage("")} }>
+              successMessage
+            </Alert>
+          ) : (
+              <Alert 
+                severity="error" 
+                onClose={() => {setErrorMessage("")}}>
+                errorMessage
+              </Alert>)}
+          </Collapse>
+        </Grid>
+        <Grid item xs={12} align="center">
           <Typography component="h4" variant="h4">
-            Create a room
+            {title}
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
@@ -84,7 +166,7 @@ export default function CreateRoomPage({ vtk, gcp, update=false, roomCode=null, 
           <FormControl>
             <TextField required={true} 
             type="number" 
-            defaultValue={defaultVotes}
+            defaultValue={votesToSkip}
             onChange={handleVotesChange}
             inputProps={{
               min: 1,
@@ -99,16 +181,6 @@ export default function CreateRoomPage({ vtk, gcp, update=false, roomCode=null, 
             </FormHelperText>
           </FormControl>
         </Grid>
-        <Grid item xs={12} align="center">
-          <Button 
-            color="primary" 
-            variant="contained" 
-            onClick={handleRoomButtonPressed}>
-            Create a room</Button>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Button color="secondary" variant="contained" to="/"
-            component={Link}>Back</Button>
-        </Grid>
+      { update ? renderUpdateButtons() : renderCreateButtons() }
       </Grid>);
 }

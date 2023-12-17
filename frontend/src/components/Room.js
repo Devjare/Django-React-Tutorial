@@ -56,8 +56,8 @@ export default function Room({leaveRoomCallback}) {
     return (
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
-          <CreateRoomPage udpate={true} vts={votesToSkip}
-            gcp={guestCanPause} roomCode={roomCode} updateCallback={() => {}}
+          <CreateRoomPage update={true} vts={votesToSkip}
+            gcp={guestCanPause} roomCode={roomCode} updateCallback={getRoomDetails}
           />
         </Grid>
         <Grid item xs={12} align="center">

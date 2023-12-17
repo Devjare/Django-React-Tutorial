@@ -163,7 +163,7 @@ class UpdateRoom(APIView):
 
             # check user session key to verify is the owner of the room.
             user_id = self.request.session.session_key
-            if room.host is not user_id:
+            if room.host != user_id:
                 return Response(
                     {"message": "You are not the host of this room."},
                     status=status.HTTP_403_FORBIDDEN,
