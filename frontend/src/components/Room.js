@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import { useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, redirect, Link } from 'react-router-dom';
 import { ButtonGroup, Button, Typography, Grid } from  "@mui/material";
 
 import CreateRoomPage from "./CreateRoomPage"
 
 export default function Room({leaveRoomCallback}) {
   let navigate = useNavigate();
+  
   const [ votesToSkip, setVotesToSkip ] = useState(0);
   const [ guestCanPause, setGuestCanPause ] = useState(false);
   const [ isHost, setIsHost ] = useState(false);
   const [ showSettings, setShowSettings ] = useState(false);
+  const [ spotifyAutheticated, setSpotifyAuthenticated ] = useState(false);
   
   const roomCode = useParams()["roomCode"]; 
   getRoomDetails()
@@ -32,6 +34,25 @@ export default function Room({leaveRoomCallback}) {
         setVotesToSkip(data.votes_to_skip)
         setGuestCanPause(data.guest_can_pause)
         setIsHost(data.is_host)
+      });
+    if (isHost) {
+      autheticateSpotify()
+    }
+  }
+  
+  function autheticateSpotify() {
+    fetch("/spotify/is-authenticated")
+    .then((response) => response.json())
+    .then((data) => {
+        setSpotifyAuthenticated(data.status)
+        if (!data.status) {
+          fetch("/spotify/get-auth-url")
+          .then((response) => response.json())
+          .then((data) => {
+              // alert(data.url)
+              window.location.replace(data.url)
+            })
+        }
       });
   }
 
