@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { useState } from 'react'
 import { useParams, useNavigate, redirect, Link } from 'react-router-dom';
 import { ButtonGroup, Button, Typography, Grid } from  "@mui/material";
 
 import CreateRoomPage from "./CreateRoomPage"
+import MusicPlayer from "./MusicPlayer"
 
 export default function Room({leaveRoomCallback}) {
   let navigate = useNavigate();
@@ -13,10 +14,23 @@ export default function Room({leaveRoomCallback}) {
   const [ isHost, setIsHost ] = useState(false);
   const [ showSettings, setShowSettings ] = useState(false);
   const [ spotifyAutheticated, setSpotifyAuthenticated ] = useState(false);
+  const [ song, setSong ] = useState({})
+  const [ intervalId, setIntervalId ] = useState(0);
   
   const roomCode = useParams()["roomCode"]; 
   getRoomDetails()
   
+  useEffect(() => {
+      // Anything in here is fired on component mount.
+      setIntervalId(setInterval(getCurrentSong, 1000))
+      return () => {
+        // Called before unomunt component from DOM 
+        // componenteWillUnmount functional alternative
+        clearInterval(intervalId)
+        setIntervalId(0)
+      }
+  }, [])
+
   // Since get room details is called each time home page is rendered
   // Because on routes there's a Room coponent. It calls getRoomDetails constanltly
   // even if the room doesn't exists, for that reason if the response is not ok (i.e., 
@@ -36,7 +50,7 @@ export default function Room({leaveRoomCallback}) {
         setIsHost(data.is_host)
       });
     if (isHost) {
-      autheticateSpotify()
+      autheticateSpotify();
     }
   }
   
@@ -54,6 +68,20 @@ export default function Room({leaveRoomCallback}) {
             })
         }
       });
+  }
+  
+  function getCurrentSong() {
+    fetch("/spotify/current-song")
+    .then((response) => {
+        if(!response.ok) {
+          return {}
+        } else {
+          return response.json()
+        }
+      })
+    .then((data) => {
+        setSong(data)
+      })
   }
 
   function leaveButtonPressed() {
@@ -114,21 +142,7 @@ export default function Room({leaveRoomCallback}) {
             Code: {roomCode}
           </Typography>
         </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Votes to skip: {votesToSkip}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Guest can pause: {guestCanPause.toString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" component="h6">
-            Is host?: {isHost.toString()}
-          </Typography>
-        </Grid>
+        <MusicPlayer song={song} />
         {isHost ? renderSettingsMethod() : null }
         <Grid item xs={12} align="center">
           <ButtonGroup>
@@ -140,7 +154,4 @@ export default function Room({leaveRoomCallback}) {
       </Grid>
     );
   }
-      
-      
-      
 }
