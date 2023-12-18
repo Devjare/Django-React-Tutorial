@@ -22,7 +22,7 @@ export default function Room({leaveRoomCallback}) {
   
   useEffect(() => {
       // Anything in here is fired on component mount.
-      setIntervalId(setInterval(getCurrentSong, 1000))
+      setIntervalId(setInterval(getCurrentSong, 5000))
       return () => {
         // Called before unomunt component from DOM 
         // componenteWillUnmount functional alternative

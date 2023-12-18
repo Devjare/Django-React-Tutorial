@@ -4,8 +4,27 @@ import { PlayArrow, SkipNextOutlined, PauseCircle } from "@mui/icons-material";
 
 
 export default function MusicPlayer({ song }) {
-
+  
   const songProgress = song.time / song.duration * 100
+    
+  function playSong() {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" }
+    }
+    fetch("/spotify/play-song", requestOptions);
+  }
+  
+  function pauseSong() {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" }
+    }
+    fetch("/spotify/pause-song", requestOptions)
+    .then((response) => {
+        console.log(response)
+      })
+  }
 
   return (
     <Card>
@@ -18,13 +37,13 @@ export default function MusicPlayer({ song }) {
             {song.title}
           </Typography>
           <Typography color="textSecondary" variant="subtitle1">
-            {song.artist}
+            {song.artists}
           </Typography>
           <div>
-            <IconButton>
+            <IconButton onClick={() => song.is_playing ? pauseSong() : playSong()}>
               { song.is_playing ? <PauseCircle /> : <PlayArrow /> }
             </IconButton>
-            <IconButton>
+            <IconButton >
               { <SkipNextOutlined /> }
             </IconButton>
           </div>
