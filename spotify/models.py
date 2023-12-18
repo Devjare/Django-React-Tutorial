@@ -1,13 +1,14 @@
 from django.db import models
+from api.models import Room
 
 
 class SpotifyToken(models.Model):
-    user = models.CharField(max_length=50, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    refresh_token = models.CharField(max_length=150)
-    access_token = models.CharField(max_length=150)
-    expires_in = models.DateTimeField()
-    token_type = models.CharField(max_length=150)
+    user: models.CharField = models.CharField(max_length=50, unique=True)
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    refresh_token: models.CharField = models.CharField(max_length=150)
+    access_token: models.CharField = models.CharField(max_length=150)
+    expires_in: models.DateTimeField = models.DateTimeField()
+    token_type: models.CharField = models.CharField(max_length=150)
 
     def __str__(self):
         meta = """
@@ -24,3 +25,9 @@ class SpotifyToken(models.Model):
                            expires_in=self.expires_in,
                            token_type=self.token_type)
         return meta
+
+class Vote(models.Model):
+    user: models.CharField = models.CharField(max_length=50, unique=True)
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    song_id: models.CharField = models.CharField(max_length=50) 
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)

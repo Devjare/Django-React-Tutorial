@@ -26,6 +26,17 @@ export default function MusicPlayer({ song }) {
       })
   }
 
+  function skipSong() {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+
+    fetch("/spotify/skip-song", requestOptions)
+    .then((response) => response.json());
+
+  }
+
   return (
     <Card>
       <Grid container spacing={1}>
@@ -43,8 +54,8 @@ export default function MusicPlayer({ song }) {
             <IconButton onClick={() => song.is_playing ? pauseSong() : playSong()}>
               { song.is_playing ? <PauseCircle /> : <PlayArrow /> }
             </IconButton>
-            <IconButton >
-              { <SkipNextOutlined /> }
+            <IconButton onClick={() => skipSong() }>
+              { <SkipNextOutlined /> } {song.votes} / {" "}{song.votes_required}
             </IconButton>
           </div>
         </Grid>
